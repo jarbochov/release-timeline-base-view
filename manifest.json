@@ -1,7 +1,7 @@
 {
 	"id": "release-timeline-view",
 	"name": "Release Timeline View",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"minAppVersion": "1.10.0",
 	"description": "Render release-style timelines from Bases.",
 	"author": "jarbochov",
