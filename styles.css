@@ -113,12 +113,12 @@ table.release-timeline-view {
 
 .release-timeline-view .release-timeline-view-year-bar--primary,
 .release-timeline-view .release-timeline-view-accent-cell--primary {
-	background-color: var(--release-timeline-view-color-primary, var(--background-modifier-border));
+	background-color: var(--release-timeline-view-color-primary, var(--background-modifier-border)) !important;
 }
 
 .release-timeline-view .release-timeline-view-year-bar--alternate,
 .release-timeline-view .release-timeline-view-accent-cell--alternate {
-	background-color: var(--release-timeline-view-color-alternate, var(--background-modifier-border));
+	background-color: var(--release-timeline-view-color-alternate, var(--background-modifier-border)) !important;
 }
 
 .release-timeline-view a.internal-link {
