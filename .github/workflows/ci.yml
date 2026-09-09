@@ -14,3 +14,5 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: obsidianmd/obsidian-workflows@v1
+        with:
+          scanner-lint: true
