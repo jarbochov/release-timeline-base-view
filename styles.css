@@ -42,7 +42,7 @@ table.release-timeline-view {
 }
 
 .release-timeline-view tr.release-timeline-view-row--gap td {
-	padding: 0;
+	padding: 0 !important;
 	height: 0;
 	background: transparent;
 }
@@ -52,11 +52,11 @@ table.release-timeline-view {
 }
 
 .release-timeline-view tr.release-timeline-view-row--month-gap td {
-	height: var(--release-timeline-view-month-gap);
+	height: var(--release-timeline-view-month-gap) !important;
 }
 
 .release-timeline-view tr.release-timeline-view-row--year-gap td {
-	height: var(--release-timeline-view-year-gap);
+	height: var(--release-timeline-view-year-gap) !important;
 }
 
 .release-timeline-view th,
@@ -98,17 +98,27 @@ table.release-timeline-view {
 }
 
 .release-timeline-view .release-timeline-view-year-bar {
-	width: var(--release-timeline-view-bar-width);
-	min-width: var(--release-timeline-view-bar-width);
-	padding: 0;
-	background-color: var(--release-timeline-view-year-bar, var(--background-modifier-border));
+	width: var(--release-timeline-view-bar-width) !important;
+	min-width: var(--release-timeline-view-bar-width) !important;
+	max-width: var(--release-timeline-view-bar-width) !important;
+	padding: 0 !important;
 }
 
 .release-timeline-view .release-timeline-view-accent-cell {
-	width: var(--release-timeline-view-bar-width);
-	min-width: var(--release-timeline-view-bar-width);
-	padding: 0;
-	background-color: var(--release-timeline-view-accent, var(--background-modifier-border));
+	width: var(--release-timeline-view-bar-width) !important;
+	min-width: var(--release-timeline-view-bar-width) !important;
+	max-width: var(--release-timeline-view-bar-width) !important;
+	padding: 0 !important;
+}
+
+.release-timeline-view .release-timeline-view-year-bar--primary,
+.release-timeline-view .release-timeline-view-accent-cell--primary {
+	background-color: var(--release-timeline-view-color-primary, var(--background-modifier-border));
+}
+
+.release-timeline-view .release-timeline-view-year-bar--alternate,
+.release-timeline-view .release-timeline-view-accent-cell--alternate {
+	background-color: var(--release-timeline-view-color-alternate, var(--background-modifier-border));
 }
 
 .release-timeline-view a.internal-link {

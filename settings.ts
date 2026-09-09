@@ -49,7 +49,7 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		new Setting(containerEl).setName('General options').setHeading();
+		new Setting(containerEl).setName('Defaults').setHeading();
 
 		new Setting(containerEl)
 			.setName('Default timeline mode')
@@ -112,7 +112,6 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 			.addSlider((slider) => {
 				slider.setLimits(400, 1600, 25);
 				slider.setValue(this.plugin.settings.defaultWidthPx);
-				slider.setDynamicTooltip();
 				slider.onChange(async (value) => {
 					this.plugin.settings.defaultWidthPx = value;
 					await this.plugin.saveSettings();
@@ -125,7 +124,6 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 			.addSlider((slider) => {
 				slider.setLimits(60, 140, 5);
 				slider.setValue(this.plugin.settings.defaultFontSizePercent);
-				slider.setDynamicTooltip();
 				slider.onChange(async (value) => {
 					this.plugin.settings.defaultFontSizePercent = value;
 					await this.plugin.saveSettings();

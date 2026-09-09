@@ -26,5 +26,7 @@
     "url": "https://github.com/jarbochov/release-timeline-view/issues"
   },
   "homepage": "https://github.com/jarbochov/release-timeline-view#readme",
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/luxon": "^2.4.0"
+  }
 }

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return -- Obsidian Bases exposes dynamic runtime values that cannot be fully typed. */
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Obsidian Bases exposes dynamic runtime values that cannot be fully typed. */
 import { App, BasesEntry, BasesView, HoverParent, QueryController, TFile } from 'obsidian';
 import { DateTime } from 'luxon';
 import type ReleaseTimeline from './main';
@@ -152,7 +152,7 @@ function readQueryProperties(value: unknown): string[] {
 	const rawItems: unknown[] = Array.isArray(value)
 		? value
 		: typeof value === 'object'
-			? Object.keys(value as Record<string, unknown>)
+			? Object.keys(value)
 			: [];
 
 	for (const item of rawItems) {
@@ -210,7 +210,7 @@ function readInlinePropertyIdsFromBaseText(text: string): string[] {
 
 		if (inlineValue) {
 			const cleaned = inlineValue
-				.replace(/^[\[(]\s*/, '')
+				.replace(/^[[(]\s*/, '')
 				.replace(/\s*[\])]$/, '');
 			const pieces = cleaned.includes(',') ? cleaned.split(',') : [cleaned];
 			for (const piece of pieces) {
@@ -402,7 +402,7 @@ function readEntryValue(app: App, entry: BasesEntry, propertyId: string): unknow
 			// Ignore unsupported property ids and try the next candidate.
 		}
 	}
-	/* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return -- Re-enable after the dynamic Bases value helpers. */
+	/* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Re-enable after the dynamic Bases value helpers. */
 
 	return null;
 }
@@ -521,7 +521,15 @@ export class ReleaseTimelineBasesView extends BasesView implements HoverParent {
 		this.rootEl = parentEl.createDiv('release-timeline-view-bases-view');
 	}
 
-	public async onDataUpdated(): Promise<void> {
+	public onDataUpdated(): void {
+		this.renderTimeline().catch((error: unknown) => {
+			console.error('Release Timeline View: failed to render', error);
+			this.rootEl.empty();
+			this.rootEl.appendChild(createErrorTable('Failed to render the timeline. See the developer console for details.'));
+		});
+	}
+
+	private async renderTimeline(): Promise<void> {
 		this.rootEl.empty();
 
 		const options = resolveTimelineOptions(this.plugin, this.config);
@@ -530,25 +538,8 @@ export class ReleaseTimelineBasesView extends BasesView implements HoverParent {
 		this.rootEl.style.setProperty('--release-timeline-view-width', `${options.widthPx}px`);
 		this.rootEl.style.setProperty('--release-timeline-view-max-width', `${options.widthPx}px`);
 		this.rootEl.style.setProperty('--release-timeline-view-font-size', `${options.fontSizePercent}%`);
-		this.rootEl.style.width = `${options.widthPx}px`;
-		this.rootEl.style.maxWidth = `${options.widthPx}px`;
-		const style = document.createElement('style');
-		style.textContent = `
-.release-timeline-view-bases-view[data-release-timeline-view-instance="${instanceId}"] {
-	max-width: ${options.widthPx}px;
-}
-.release-timeline-view-bases-view[data-release-timeline-view-instance="${instanceId}"] .release-timeline-view {
-	width: ${options.widthPx}px;
-}
-.release-timeline-view-bases-view[data-release-timeline-view-instance="${instanceId}"] .release-timeline-view-year-bar--primary,
-.release-timeline-view-bases-view[data-release-timeline-view-instance="${instanceId}"] .release-timeline-view-accent-cell--primary {
-	background-color: ${this.plugin.settings.accentPrimaryColor};
-}
-.release-timeline-view-bases-view[data-release-timeline-view-instance="${instanceId}"] .release-timeline-view-year-bar--alternate,
-.release-timeline-view-bases-view[data-release-timeline-view-instance="${instanceId}"] .release-timeline-view-accent-cell--alternate {
-	background-color: ${this.plugin.settings.accentAlternateColor};
-}`;
-		this.rootEl.appendChild(style);
+		this.rootEl.style.setProperty('--release-timeline-view-color-primary', this.plugin.settings.accentPrimaryColor);
+		this.rootEl.style.setProperty('--release-timeline-view-color-alternate', this.plugin.settings.accentAlternateColor);
 		const viewName = readString(this.config.get('name'), '');
 		const datePropertyId = readPropertyId(this.config, 'dateProperty', 'note.date');
 		const labelPropertyId = readPropertyId(this.config, 'labelProperty', 'file.name');
