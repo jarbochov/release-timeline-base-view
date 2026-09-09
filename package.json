@@ -5,7 +5,6 @@
   "main": "main.js",
   "dependencies": {
     "esbuild": "^0.16.17",
-    "esbuild-darwin-arm64": "^0.14.27",
     "luxon": "^2.3.0",
     "obsidian": "^1.13.1",
     "tslib": "^2.5.2"
