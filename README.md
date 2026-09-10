@@ -1,8 +1,8 @@
-# Release Timeline View for Obsidian Bases
+# Release Timeline Base View
 
 This plugin renders release-style timelines as a custom [Obsidian Bases](https://help.obsidian.md/bases) view.
 
-It no longer depends on Dataview. Create a Base, filter the notes you want, and select the `Release Timeline View` custom view for that Base.
+It no longer depends on Dataview. Create a Base, filter the notes you want, and select the `Release Timeline Base View` custom view for that Base.
 
 This project is based on the original release timeline plugin by cakechaser: https://github.com/cakechaser/obsidian-release-timeline. It has been adapted for native Obsidian Bases support.
 
