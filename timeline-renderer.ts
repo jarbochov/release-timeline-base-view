@@ -28,7 +28,7 @@ function createCell(tag: 'th' | 'td', text: string, className: string): HTMLTabl
 }
 
 export function createErrorTable(message: string, columnCount = 5): HTMLTableElement {
-	const table = createDetachedHost().createEl('table', { cls: ['release-timeline-view', 'release-timeline-view-error'] });
+	const table = createDetachedHost().createEl('table', { cls: ['release-timeline-base-view', 'release-timeline-base-view-error'] });
 	const tbody = table.createEl('tbody');
 	const row = tbody.createEl('tr');
 	row.createEl('td', { attr: { colspan: String(columnCount) }, text: message });
@@ -54,7 +54,7 @@ function createTimelineLink(parent: HTMLElement, record: TimelineRecord, app: Ap
 	link.addEventListener('mouseover', (event) => {
 		app.workspace.trigger('hover-link', {
 			event,
-			source: 'release-timeline-view',
+			source: 'release-timeline-base-view',
 			hoverParent,
 			targetEl: link,
 			linktext: record.filePath,
@@ -69,20 +69,20 @@ function appendInlineProperties(container: HTMLElement, record: TimelineRecord):
 		return;
 	}
 
-	const props = container.createDiv({ cls: 'release-timeline-view-inline-properties' });
+	const props = container.createDiv({ cls: 'release-timeline-base-view-inline-properties' });
 
 	record.inlineProperties.forEach((entry) => {
-		const prop = props.createDiv({ cls: 'release-timeline-view-inline-property' });
-		prop.createDiv({ cls: 'release-timeline-view-inline-property-label', text: entry.label });
-		prop.createDiv({ cls: 'release-timeline-view-inline-property-value', text: entry.value });
+		const prop = props.createDiv({ cls: 'release-timeline-base-view-inline-property' });
+		prop.createDiv({ cls: 'release-timeline-base-view-inline-property-label', text: entry.label });
+		prop.createDiv({ cls: 'release-timeline-base-view-inline-property-value', text: entry.value });
 	});
 }
 
 function createNoteContent(record: TimelineRecord, bulletPoints: boolean, app: App, hoverParent: HoverParent): HTMLSpanElement {
-	const wrapper = createDetachedHost().createSpan({ cls: 'release-timeline-view-note-content' });
-	const titleRow = wrapper.createSpan({ cls: 'release-timeline-view-note-title-row' });
+	const wrapper = createDetachedHost().createSpan({ cls: 'release-timeline-base-view-note-content' });
+	const titleRow = wrapper.createSpan({ cls: 'release-timeline-base-view-note-title-row' });
 	if (bulletPoints) {
-		titleRow.createSpan({ cls: 'release-timeline-view-bullet', text: '•' });
+		titleRow.createSpan({ cls: 'release-timeline-base-view-bullet', text: '•' });
 	}
 	createTimelineLink(titleRow, record, app, hoverParent);
 	appendInlineProperties(wrapper, record);
@@ -90,7 +90,7 @@ function createNoteContent(record: TimelineRecord, bulletPoints: boolean, app: A
 }
 
 function createItemCell(records: TimelineRecord[], bulletPoints: boolean, itemLayout: 'stacked' | 'inline', inlineDelimiter: string, app: App, hoverParent: HoverParent): HTMLTableCellElement {
-	const cell = createDetachedHost().createEl('td', { cls: ['release-timeline-view-items', 'release-timeline-view-items--base'] });
+	const cell = createDetachedHost().createEl('td', { cls: ['release-timeline-base-view-items', 'release-timeline-base-view-items--base'] });
 
 	if (records.length === 0) {
 		cell.classList.add('is-empty');
@@ -99,7 +99,7 @@ function createItemCell(records: TimelineRecord[], bulletPoints: boolean, itemLa
 	}
 
 	if (itemLayout === 'stacked') {
-		const list = cell.createEl('ul', { cls: ['release-timeline-view-list', bulletPoints ? 'has-bullets' : 'no-bullets'] });
+		const list = cell.createEl('ul', { cls: ['release-timeline-base-view-list', bulletPoints ? 'has-bullets' : 'no-bullets'] });
 
 		for (const record of records) {
 			const li = list.createEl('li');
@@ -119,7 +119,7 @@ function createItemCell(records: TimelineRecord[], bulletPoints: boolean, itemLa
 }
 
 function createSingleItemRow(record: TimelineRecord | null, bulletPoints: boolean, app: App, hoverParent: HoverParent): HTMLTableCellElement {
-	const cell = createDetachedHost().createEl('td', { cls: ['release-timeline-view-items', 'release-timeline-view-items--base'] });
+	const cell = createDetachedHost().createEl('td', { cls: ['release-timeline-base-view-items', 'release-timeline-base-view-items--base'] });
 
 	if (!record) {
 		cell.classList.add('is-empty');
@@ -177,7 +177,7 @@ export function renderTimelineTable(rows: TimelineRow[], options: TimelineRender
 		return createErrorTable('No matching notes were found for this timeline.', options.showYearBar ? 5 : 4);
 	}
 
-	const table = createDetachedHost().createEl('table', { cls: ['release-timeline-view', 'release-timeline-view-bases'] });
+	const table = createDetachedHost().createEl('table', { cls: ['release-timeline-base-view', 'release-timeline-base-view-bases'] });
 	table.dataset.releaseTimelineViewInstance = options.instanceId;
 	table.dataset.mode = options.mode;
 	table.dataset.itemLayout = options.itemLayout;
@@ -209,13 +209,13 @@ export function renderTimelineTable(rows: TimelineRow[], options: TimelineRender
 			const itemRows = options.itemLayout === 'stacked' ? (row.items.length > 0 ? row.items : [null]) : [row.items[0] ?? null];
 
 			itemRows.forEach((itemRecord, itemIndex) => {
-				const tr = tbody.createEl('tr', { cls: ['release-timeline-view-row', `release-timeline-view-row--${row.kind}`] });
+				const tr = tbody.createEl('tr', { cls: ['release-timeline-base-view-row', `release-timeline-base-view-row--${row.kind}`] });
 				if (row.empty) {
 					tr.classList.add('is-empty');
 				}
 
 				if (!yearCellDrawn) {
-					const yearCell = createCell('th', row.year, 'release-timeline-view-period release-timeline-view-period--year');
+					const yearCell = createCell('th', row.year, 'release-timeline-base-view-period release-timeline-base-view-period--year');
 					yearCell.scope = 'row';
 					yearCell.rowSpan = yearRowSpan;
 					yearCell.dataset.releaseKind = row.kind;
@@ -223,7 +223,7 @@ export function renderTimelineTable(rows: TimelineRow[], options: TimelineRender
 					tr.appendChild(yearCell);
 
 					if (options.showYearBar) {
-						const yearBarCell = tr.createEl('td', { cls: ['release-timeline-view-year-bar', `release-timeline-view-year-bar--${yearAccentClass}`] });
+						const yearBarCell = tr.createEl('td', { cls: ['release-timeline-base-view-year-bar', `release-timeline-base-view-year-bar--${yearAccentClass}`] });
 						yearBarCell.rowSpan = yearRowSpan;
 					}
 
@@ -231,7 +231,7 @@ export function renderTimelineTable(rows: TimelineRow[], options: TimelineRender
 				}
 
 				if (itemIndex === 0) {
-					const monthCell = createCell('th', monthLabel, 'release-timeline-view-period release-timeline-view-period--secondary');
+					const monthCell = createCell('th', monthLabel, 'release-timeline-base-view-period release-timeline-base-view-period--secondary');
 					monthCell.scope = 'row';
 					monthCell.rowSpan = monthRows;
 					monthCell.dataset.releaseKind = row.kind;
@@ -239,7 +239,7 @@ export function renderTimelineTable(rows: TimelineRow[], options: TimelineRender
 					tr.appendChild(monthCell);
 				}
 
-				const accentCell = tr.createEl('td', { cls: ['release-timeline-view-accent-cell', `release-timeline-view-accent-cell--${monthAccentClass}`] });
+				const accentCell = tr.createEl('td', { cls: ['release-timeline-base-view-accent-cell', `release-timeline-base-view-accent-cell--${monthAccentClass}`] });
 				tr.appendChild(accentCell);
 
 				const itemCell = options.itemLayout === 'stacked'
@@ -251,14 +251,14 @@ export function renderTimelineTable(rows: TimelineRow[], options: TimelineRender
 			});
 
 			if (rowIndex < yearGroup.length - 1) {
-				const gapRow = tbody.createEl('tr', { cls: ['release-timeline-view-row', 'release-timeline-view-row--gap', 'release-timeline-view-row--month-gap'] });
-				gapRow.createEl('td', { cls: 'release-timeline-view-gap', attr: { colspan: String(columnCount) } });
+				const gapRow = tbody.createEl('tr', { cls: ['release-timeline-base-view-row', 'release-timeline-base-view-row--gap', 'release-timeline-base-view-row--month-gap'] });
+				gapRow.createEl('td', { cls: 'release-timeline-base-view-gap', attr: { colspan: String(columnCount) } });
 			}
 		});
 
 		if (yearGroupIndex < yearGroups.length - 1) {
-			const gapRow = tbody.createEl('tr', { cls: ['release-timeline-view-row', 'release-timeline-view-row--gap', 'release-timeline-view-row--year-gap'] });
-			gapRow.createEl('td', { cls: 'release-timeline-view-gap', attr: { colspan: String(columnCount) } });
+			const gapRow = tbody.createEl('tr', { cls: ['release-timeline-base-view-row', 'release-timeline-base-view-row--gap', 'release-timeline-base-view-row--year-gap'] });
+			gapRow.createEl('td', { cls: 'release-timeline-base-view-gap', attr: { colspan: String(columnCount) } });
 		}
 	});
 

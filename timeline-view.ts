@@ -5,7 +5,7 @@ import type ReleaseTimeline from './main';
 import { buildTimelineRows, parseTimelineDate, AccentAlternationMode, ItemLayout, TimelineBuildOptions, TimelineRecord, TimelineMode, SortDirection, WeekDisplayFormat } from './timeline-core';
 import { createErrorTable, renderTimelineTable } from './timeline-renderer';
 
-export const RELEASE_TIMELINE_VIEW_TYPE = 'release-timeline-view';
+export const RELEASE_TIMELINE_VIEW_TYPE = 'release-timeline-base-view';
 
 function readBoolean(value: unknown, fallback: boolean): boolean {
 	if (typeof value === 'boolean') {
@@ -178,7 +178,7 @@ function readQueryProperties(value: unknown): string[] {
 
 function readInlinePropertyIdsFromBaseText(text: string): string[] {
 	const lines = text.split(/\r?\n/);
-	const startIndex = lines.findIndex((line) => /^\s*-\s*type:\s*release-timeline-view\b/.test(line));
+	const startIndex = lines.findIndex((line) => /^\s*-\s*type:\s*release-timeline-base-view\b/.test(line));
 	if (startIndex === -1) {
 		return [];
 	}
@@ -518,7 +518,7 @@ export class ReleaseTimelineBasesView extends BasesView implements HoverParent {
 	constructor(controller: QueryController, parentEl: HTMLElement, plugin: ReleaseTimeline) {
 		super(controller);
 		this.plugin = plugin;
-		this.rootEl = parentEl.createDiv('release-timeline-view-bases-view');
+		this.rootEl = parentEl.createDiv('release-timeline-base-view-bases-view');
 	}
 
 	public onDataUpdated(): void {
@@ -533,13 +533,13 @@ export class ReleaseTimelineBasesView extends BasesView implements HoverParent {
 		this.rootEl.empty();
 
 		const options = resolveTimelineOptions(this.plugin, this.config);
-		const instanceId = `release-timeline-view-${Date.now().toString(36)}`;
+		const instanceId = `release-timeline-base-view-${Date.now().toString(36)}`;
 		this.rootEl.dataset.releaseTimelineViewInstance = instanceId;
-		this.rootEl.style.setProperty('--release-timeline-view-width', `${options.widthPx}px`);
-		this.rootEl.style.setProperty('--release-timeline-view-max-width', `${options.widthPx}px`);
-		this.rootEl.style.setProperty('--release-timeline-view-font-size', `${options.fontSizePercent}%`);
-		this.rootEl.style.setProperty('--release-timeline-view-color-primary', this.plugin.settings.accentPrimaryColor);
-		this.rootEl.style.setProperty('--release-timeline-view-color-alternate', this.plugin.settings.accentAlternateColor);
+		this.rootEl.style.setProperty('--release-timeline-base-view-width', `${options.widthPx}px`);
+		this.rootEl.style.setProperty('--release-timeline-base-view-max-width', `${options.widthPx}px`);
+		this.rootEl.style.setProperty('--release-timeline-base-view-font-size', `${options.fontSizePercent}%`);
+		this.rootEl.style.setProperty('--release-timeline-base-view-color-primary', this.plugin.settings.accentPrimaryColor);
+		this.rootEl.style.setProperty('--release-timeline-base-view-color-alternate', this.plugin.settings.accentAlternateColor);
 		const viewName = readString(this.config.get('name'), '');
 		const datePropertyId = readPropertyId(this.config, 'dateProperty', 'note.date');
 		const labelPropertyId = readPropertyId(this.config, 'labelProperty', 'file.name');
