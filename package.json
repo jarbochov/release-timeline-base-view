@@ -17,15 +17,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jarbochov/release-timeline-view.git"
+    "url": "git+https://github.com/jarbochov/release-timeline-base-view.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jarbochov/release-timeline-view/issues"
+    "url": "https://github.com/jarbochov/release-timeline-base-view/issues"
   },
-  "homepage": "https://github.com/jarbochov/release-timeline-view#readme",
+  "homepage": "https://github.com/jarbochov/release-timeline-base-view#readme",
   "devDependencies": {
     "@types/luxon": "^2.4.0"
   }
