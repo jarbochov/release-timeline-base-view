@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return -- Obsidian's settings UI helpers are loosely typed. */
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, SettingDefinitionItem } from 'obsidian';
 import type ReleaseTimeline from './main';
 import { AccentAlternationMode, ItemLayout, SortDirection, TimelineMode, WeekDisplayFormat } from './timeline-core';
 
@@ -43,6 +43,171 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 	constructor(app: App, plugin: ReleaseTimeline) {
 		super(app, plugin);
 		this.plugin = plugin;
+	}
+
+	getSettingDefinitions(): SettingDefinitionItem[] {
+		return [
+			{
+				name: 'Defaults',
+				type: 'heading',
+			},
+			{
+				name: 'Default timeline mode',
+				desc: 'Used when creating a new Release Timeline View.',
+				control: {
+					type: 'dropdown',
+					key: 'defaultTimelineMode',
+					options: {
+						year: 'Year',
+						month: 'Month',
+						week: 'Week',
+					},
+				},
+			},
+			{
+				name: 'Default sort order',
+				desc: 'Used when a view does not specify a sort direction.',
+				control: {
+					type: 'dropdown',
+					key: 'defaultSortOrder',
+					options: {
+						asc: 'Ascending',
+						desc: 'Descending',
+					},
+				},
+			},
+			{
+				name: 'Default item layout',
+				desc: 'Controls whether multiple items in a period stack vertically or appear inline.',
+				control: {
+					type: 'dropdown',
+					key: 'defaultItemLayout',
+					options: {
+						stacked: 'Stacked',
+						inline: 'Inline with delimiter',
+					},
+				},
+			},
+			{
+				name: 'Accent alternation',
+				desc: 'Controls whether the accent colors alternate by year, month/week, both, or not at all.',
+				control: {
+					type: 'dropdown',
+					key: 'accentAlternationMode',
+					options: {
+						none: 'None',
+						year: 'Year only',
+						month: 'Month/week only',
+						both: 'Year and month/week',
+					},
+				},
+			},
+			{
+				name: 'Default width',
+				desc: 'Sets the timeline width in pixels.',
+				control: {
+					type: 'slider',
+					key: 'defaultWidthPx',
+				},
+			},
+			{
+				name: 'Default font size',
+				desc: 'Sets the timeline text size as a percentage of the Obsidian interface font.',
+				control: {
+					type: 'slider',
+					key: 'defaultFontSizePercent',
+				},
+			},
+			{
+				name: 'Bullet points',
+				desc: 'Makes multi-item periods easier to scan.',
+				control: {
+					type: 'toggle',
+					key: 'bulletPoints',
+				},
+			},
+			{
+				name: 'Year defaults',
+				type: 'heading',
+			},
+			{
+				name: 'Collapse empty years',
+				desc: 'Long runs of empty years can be compressed into a single range row.',
+				control: {
+					type: 'toggle',
+					key: 'collapseEmptyYears',
+				},
+			},
+			{
+				name: 'Minimum number of empty years to collapse',
+				desc: 'The minimum consecutive empty year count required before collapse happens.',
+				control: {
+					type: 'text',
+					key: 'collapseLimit',
+				},
+			},
+			{
+				name: 'Week defaults',
+				type: 'heading',
+			},
+			{
+				name: 'Collapse empty weeks',
+				desc: 'Weeks without entries are reduced to a single row in week mode.',
+				control: {
+					type: 'toggle',
+					key: 'collapseEmptyWeeksWeeklyTimeline',
+				},
+			},
+			{
+				name: 'Collapse empty months',
+				desc: 'Months without entries are reduced to a single row in week mode.',
+				control: {
+					type: 'toggle',
+					key: 'collapseEmptyMonthsWeeklyTimeline',
+				},
+			},
+			{
+				name: 'Week formatting',
+				control: {
+					type: 'dropdown',
+					key: 'weekDisplayFormat',
+					options: {
+						weekNames: 'Week names: W15',
+						dateNames: 'Date names: 2025-08-19',
+						monthDayRange: 'Date range: Feb 13-20',
+					},
+				},
+			},
+			{
+				name: 'Timeline colors',
+				type: 'heading',
+			},
+			{
+				name: 'Primary accent',
+				desc: 'Main color used for accent bars.',
+				control: {
+					type: 'colorpicker',
+					key: 'accentPrimaryColor',
+				},
+			},
+			{
+				name: 'Alternate accent',
+				desc: 'Secondary color used when alternating accents.',
+				control: {
+					type: 'colorpicker',
+					key: 'accentAlternateColor',
+				},
+			},
+		];
+	}
+
+	getControlValue(key: string): unknown {
+		return (this.plugin.settings as Record<string, unknown>)[key];
+	}
+
+	setControlValue(key: string, value: unknown): void {
+		(this.plugin.settings as Record<string, unknown>)[key] = value;
+		this.plugin.saveSettings();
 	}
 
 	display(): void {
