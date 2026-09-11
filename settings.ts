@@ -207,7 +207,7 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 
 	setControlValue(key: string, value: unknown): void {
 		(this.plugin.settings as Record<string, unknown>)[key] = value;
-		this.plugin.saveSettings();
+		void this.plugin.saveSettings();
 	}
 
 	display(): void {
