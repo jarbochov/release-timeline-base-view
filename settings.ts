@@ -192,7 +192,7 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 				name: 'Primary accent',
 				desc: 'Main color used for accent bars.',
 				control: {
-					type: 'colorpicker',
+					type: 'color',
 					key: 'accentPrimaryColor',
 				},
 			},
@@ -200,7 +200,7 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 				name: 'Alternate accent',
 				desc: 'Secondary color used when alternating accents.',
 				control: {
-					type: 'colorpicker',
+					type: 'color',
 					key: 'accentAlternateColor',
 				},
 			},
