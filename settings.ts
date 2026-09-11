@@ -108,6 +108,9 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 				control: {
 					type: 'slider',
 					key: 'defaultWidthPx',
+					min: 400,
+					max: 1600,
+					step: 25,
 				},
 			},
 			{
@@ -116,6 +119,9 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 				control: {
 					type: 'slider',
 					key: 'defaultFontSizePercent',
+					min: 60,
+					max: 140,
+					step: 5,
 				},
 			},
 			{
