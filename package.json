@@ -1,19 +1,15 @@
 {
   "name": "release-timeline-base-view",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "Release timeline rendered as a custom Obsidian Bases view.",
   "main": "main.js",
-  "dependencies": {
-    "esbuild": "^0.16.17",
-    "luxon": "^2.3.0",
-    "obsidian": "^1.13.1",
-    "tslib": "^2.5.2"
-  },
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "test": "node scripts/smoke-test.mjs",
-    "verify": "npm run build && npm test"
+    "verify": "npm run typecheck && npm run lint && npm run build && npm test"
   },
   "repository": {
     "type": "git",
@@ -27,6 +23,13 @@
   },
   "homepage": "https://github.com/jarbochov/release-timeline-base-view#readme",
   "devDependencies": {
-    "@types/luxon": "^2.4.0"
+    "@eslint/js": "^10.0.1",
+    "esbuild": "^0.16.17",
+    "eslint": "^10.15.0",
+    "eslint-plugin-obsidianmd": "^0.6.0",
+    "obsidian": "^1.13.1",
+    "tslib": "^2.5.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.74.0"
   }
 }

@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return -- Obsidian's Bases APIs are loosely typed at runtime. */
-import { Notice, Plugin } from 'obsidian';
+import { BasesAllOptions, BasesViewConfig, Notice, Plugin } from 'obsidian';
 import { ReleaseTimelineBasesView, RELEASE_TIMELINE_VIEW_TYPE } from './timeline-view';
 import { DEFAULT_SETTINGS, ReleaseTimelineSettingTab, ReleaseTimelineSettings } from './settings';
 
 export default class ReleaseTimeline extends Plugin {
-	settings: ReleaseTimelineSettings;
+	settings: ReleaseTimelineSettings = { ...DEFAULT_SETTINGS };
+	private readonly settingsListeners = new Set<() => void>();
 
 	async onload() {
 		await this.loadSettings();
@@ -14,7 +14,14 @@ export default class ReleaseTimeline extends Plugin {
 	}
 
 	onunload() {
-		// Bases view lifecycle is managed by Obsidian.
+		this.settingsListeners.clear();
+	}
+
+	onSettingsChanged(listener: () => void): () => void {
+		this.settingsListeners.add(listener);
+		return () => {
+			this.settingsListeners.delete(listener);
+		};
 	}
 
 	private registerReleaseTimelineView() {
@@ -22,8 +29,15 @@ export default class ReleaseTimeline extends Plugin {
 			name: 'Release Timeline View',
 			icon: 'lucide-calendar-range',
 			factory: (controller, containerEl) => new ReleaseTimelineBasesView(controller, containerEl, this),
-			options: (config) => {
-				const shouldShowDelimiter = () => config.get('itemLayout') === 'inline';
+			options: (config: BasesViewConfig): BasesAllOptions[] => {
+				const readOption = (key: string, fallback: string): string => {
+					const val = config.get(key);
+					return typeof val === 'string' && val.length > 0 ? val : fallback;
+				};
+				const getMode = () => readOption('mode', this.settings.defaultTimelineMode);
+				const getLayout = () => readOption('itemLayout', this.settings.defaultItemLayout);
+				const getStyle = () => readOption('timelineStyle', this.settings.defaultTimelineStyle);
+				const getWidthMode = () => readOption('widthMode', this.settings.defaultWidthMode);
 
 				return [
 					{
@@ -32,9 +46,23 @@ export default class ReleaseTimeline extends Plugin {
 						displayName: 'Timeline mode',
 						default: this.settings.defaultTimelineMode,
 						options: {
+							decade: 'Decade',
 							year: 'Year',
+							quarter: 'Quarter',
 							month: 'Month',
 							week: 'Week',
+						},
+					},
+					{
+						type: 'dropdown',
+						key: 'timelineStyle',
+						displayName: 'Layout style',
+						default: this.settings.defaultTimelineStyle,
+						options: {
+							table: 'Classic table',
+							spine: 'Vertical spine',
+							horizontal: 'Horizontal (diagonal)',
+							horizontalStacked: 'Horizontal (stacked)',
 						},
 					},
 					{
@@ -48,6 +76,16 @@ export default class ReleaseTimeline extends Plugin {
 						key: 'labelProperty',
 						displayName: 'Label property',
 						default: 'file.name',
+					},
+					{
+						type: 'property',
+						key: 'coverProperty',
+						displayName: 'Cover image property',
+					},
+					{
+						type: 'property',
+						key: 'colorProperty',
+						displayName: 'Color-by property',
 					},
 					{
 						type: 'dropdown',
@@ -67,6 +105,7 @@ export default class ReleaseTimeline extends Plugin {
 						options: {
 							stacked: 'Stacked',
 							inline: 'Inline with delimiter',
+							cards: 'Cards',
 						},
 					},
 					{
@@ -75,7 +114,49 @@ export default class ReleaseTimeline extends Plugin {
 						displayName: 'Inline delimiter',
 						placeholder: ', ',
 						default: ', ',
-						shouldHide: () => !shouldShowDelimiter(),
+						shouldHide: () => getLayout() !== 'inline',
+					},
+					{
+						type: 'toggle',
+						key: 'bulletPoints',
+						displayName: 'Bullet points in stacked layout',
+						default: this.settings.bulletPoints,
+						shouldHide: () => getLayout() !== 'stacked',
+					},
+					{
+						type: 'dropdown',
+						key: 'inlinePropertyStyle',
+						displayName: 'Property display',
+						default: this.settings.defaultInlinePropertyStyle,
+						options: {
+							stacked: 'Stacked list',
+							pills: 'Compact pills',
+						},
+					},
+					{
+						type: 'toggle',
+						key: 'showItemDates',
+						displayName: 'Show item date badges',
+						default: this.settings.showItemDates,
+					},
+					{
+						type: 'toggle',
+						key: 'showTodayMarker',
+						displayName: 'Highlight current period ("Today")',
+						default: this.settings.showTodayMarker,
+					},
+					{
+						type: 'toggle',
+						key: 'showJumpBar',
+						displayName: 'Show year jump bar',
+						default: this.settings.showJumpBar,
+					},
+					{
+						type: 'toggle',
+						key: 'fitHorizontalToWidth',
+						displayName: 'Fit horizontal timeline to width',
+						default: this.settings.fitHorizontalToWidth,
+						shouldHide: () => getStyle() !== 'horizontal' && getStyle() !== 'horizontalStacked',
 					},
 					{
 						type: 'dropdown',
@@ -85,8 +166,8 @@ export default class ReleaseTimeline extends Plugin {
 						options: {
 							none: 'None',
 							year: 'Year only',
-							month: 'Month/week only',
-							both: 'Year and month/week',
+							month: 'Sub-period only',
+							both: 'Year and sub-period',
 						},
 					},
 					{
@@ -94,6 +175,18 @@ export default class ReleaseTimeline extends Plugin {
 						key: 'showYearBar',
 						displayName: 'Show year bar',
 						default: true,
+						shouldHide: () => getStyle() !== 'table',
+					},
+					{
+						type: 'dropdown',
+						key: 'widthMode',
+						displayName: 'Width mode',
+						default: this.settings.defaultWidthMode,
+						options: {
+							auto: 'Auto (fit container)',
+							fixed: 'Fixed width (px)',
+						},
+						shouldHide: () => getStyle() === 'horizontal' || getStyle() === 'horizontalStacked',
 					},
 					{
 						type: 'slider',
@@ -103,6 +196,7 @@ export default class ReleaseTimeline extends Plugin {
 						min: 400,
 						max: 1600,
 						step: 25,
+						shouldHide: () => getStyle() === 'horizontal' || getStyle() === 'horizontalStacked' || getWidthMode() !== 'fixed',
 					},
 					{
 						type: 'slider',
@@ -115,40 +209,41 @@ export default class ReleaseTimeline extends Plugin {
 					},
 					{
 						type: 'toggle',
-						key: 'bulletPoints',
-						displayName: 'Bullet points in stacked layout',
-						default: this.settings.bulletPoints,
+						key: 'collapseEmptyYears',
+						displayName: 'Collapse empty years / decades',
+						default: this.settings.collapseEmptyYears,
+						shouldHide: () => {
+							const mode = getMode();
+							return mode !== 'year' && mode !== 'decade';
+						},
 					},
 					{
-						type: 'group',
-						displayName: 'Collapse settings',
-						items: [
-							{
-								type: 'toggle',
-								key: 'collapseEmptyYears',
-								displayName: 'Collapse empty years',
-								default: this.settings.collapseEmptyYears,
-							},
-							{
-								type: 'text',
-								key: 'collapseLimit',
-								displayName: 'Year collapse limit',
-								placeholder: '2',
-								default: this.settings.collapseLimit,
-							},
-							{
-								type: 'toggle',
-								key: 'collapseEmptyWeeks',
-								displayName: 'Collapse empty weeks',
-								default: this.settings.collapseEmptyWeeksWeeklyTimeline,
-							},
-							{
-								type: 'toggle',
-								key: 'collapseEmptyMonths',
-								displayName: 'Collapse empty months',
-								default: this.settings.collapseEmptyMonthsWeeklyTimeline,
-							},
-						],
+						type: 'text',
+						key: 'collapseLimit',
+						displayName: 'Year collapse threshold',
+						placeholder: '2',
+						default: this.settings.collapseLimit,
+						shouldHide: () => {
+							const mode = getMode();
+							return mode !== 'year' && mode !== 'decade';
+						},
+					},
+					{
+						type: 'toggle',
+						key: 'collapseEmptyMonths',
+						displayName: 'Collapse empty quarters / months',
+						default: this.settings.collapseEmptyMonthsWeeklyTimeline,
+						shouldHide: () => {
+							const mode = getMode();
+							return mode !== 'quarter' && mode !== 'month' && mode !== 'week';
+						},
+					},
+					{
+						type: 'toggle',
+						key: 'collapseEmptyWeeks',
+						displayName: 'Collapse empty weeks',
+						default: this.settings.collapseEmptyWeeksWeeklyTimeline,
+						shouldHide: () => getMode() !== 'week',
 					},
 					{
 						type: 'dropdown',
@@ -160,6 +255,7 @@ export default class ReleaseTimeline extends Plugin {
 							dateNames: 'Date names: 2025-08-19',
 							monthDayRange: 'Date range: Feb 13-20',
 						},
+						shouldHide: () => getMode() !== 'week',
 					},
 				];
 			},
@@ -171,11 +267,14 @@ export default class ReleaseTimeline extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const loaded = (await this.loadData()) as Partial<ReleaseTimelineSettings> | null;
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, loaded ?? {});
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		for (const listener of this.settingsListeners) {
+			listener();
+		}
 	}
 }
-/* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return -- Re-enable after the plugin class scope. */
