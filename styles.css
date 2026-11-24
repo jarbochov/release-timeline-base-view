@@ -67,6 +67,11 @@ table.release-timeline-base-view {
 	max-width: 100%;
 }
 
+table.release-timeline-base-view[data-width-mode='fixed'] {
+	width: var(--release-timeline-base-view-width, 900px);
+	max-width: var(--release-timeline-base-view-width, 900px);
+}
+
 table.release-timeline-base-view col.release-timeline-base-view-col-year {
 	width: 4.8em;
 }
@@ -203,7 +208,12 @@ table.release-timeline-base-view td.release-timeline-base-view-accent-cell {
 }
 
 .release-timeline-base-view-expand-btn {
-	all: unset;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	padding: 0;
+	margin: 0;
+	height: auto;
 	cursor: pointer;
 	font: inherit;
 	color: inherit;
@@ -416,6 +426,10 @@ table.release-timeline-base-view td.release-timeline-base-view-accent-cell {
 	line-height: 1.35;
 }
 
+.release-timeline-base-view-spine[data-width-mode='fixed'] {
+	max-width: var(--release-timeline-base-view-width, 900px);
+}
+
 .release-timeline-base-view-spine-year + .release-timeline-base-view-spine-year {
 	margin-top: 1.25rem;
 }
@@ -507,6 +521,7 @@ table.release-timeline-base-view td.release-timeline-base-view-accent-cell {
 }
 
 .release-timeline-base-view-horizontal.is-fit-width .release-timeline-base-view-htrack {
+	transform: scale(var(--release-timeline-base-view-scale, 1));
 	transform-origin: top left;
 	min-width: 0;
 }
@@ -748,7 +763,11 @@ table.release-timeline-base-view td.release-timeline-base-view-accent-cell {
 }
 
 .release-timeline-base-view-hnode-popover-close {
-	all: unset;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	margin: 0;
+	height: auto;
 	cursor: pointer;
 	font-size: 1.15em;
 	line-height: 1;
@@ -832,6 +851,24 @@ table.release-timeline-base-view td.release-timeline-base-view-accent-cell {
 .release-timeline-base-view-hnode-vitem {
 	line-height: 1.3;
 	word-break: break-word;
+}
+
+/* Dynamic property-driven item colors via CSS custom properties */
+.release-timeline-base-view-color-dot.has-item-color,
+.release-timeline-base-view-bases-view table.release-timeline-base-view tbody td.release-timeline-base-view-year-bar.has-item-color,
+.release-timeline-base-view-bases-view table.release-timeline-base-view tbody td.release-timeline-base-view-accent-cell.has-item-color,
+.release-timeline-base-view-hnode-dot.has-item-color,
+.release-timeline-base-view-hnode-vstem.has-item-color {
+	background-color: var(--release-timeline-base-view-item-color);
+}
+
+.release-timeline-base-view-card.has-item-color,
+.release-timeline-base-view-hnode-vlist.has-item-color {
+	border-left-color: var(--release-timeline-base-view-item-color);
+}
+
+.release-timeline-base-view-hnode-callout.has-item-color .release-timeline-base-view-hleader {
+	stroke: var(--release-timeline-base-view-item-color);
 }
 
 .release-timeline-base-view .is-empty,

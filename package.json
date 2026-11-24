@@ -1,6 +1,6 @@
 {
   "name": "release-timeline-base-view",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Release timeline rendered as a custom Obsidian Bases view.",
   "main": "main.js",
   "scripts": {

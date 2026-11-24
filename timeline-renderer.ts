@@ -244,10 +244,10 @@ function appendNoteContent(
 
 	if (record.colorKey) {
 		const dot = titleRow.createSpan({
-			cls: 'release-timeline-base-view-color-dot',
+			cls: ['release-timeline-base-view-color-dot', 'has-item-color'],
 			attr: { title: record.colorKey },
 		});
-		dot.style.backgroundColor = getColorForKey(record.colorKey);
+		dot.setCssProps({ '--release-timeline-base-view-item-color': getColorForKey(record.colorKey) });
 	}
 
 	if (options.showItemDates) {
@@ -269,8 +269,8 @@ function appendCardItem(
 ): HTMLElement {
 	const card = parent.createDiv({ cls: 'release-timeline-base-view-card' });
 	if (record.colorKey) {
-		card.style.borderLeftColor = getColorForKey(record.colorKey);
-		card.classList.add('has-color-key');
+		card.setCssProps({ '--release-timeline-base-view-item-color': getColorForKey(record.colorKey) });
+		card.classList.add('has-color-key', 'has-item-color');
 	}
 
 	if (record.coverSrc) {
@@ -510,13 +510,6 @@ function renderTableLayout(
 	table.dataset.showYearBar = String(options.showYearBar);
 	table.dataset.widthMode = options.widthMode;
 
-	if (options.widthMode === 'fixed') {
-		table.setCssProps({
-			width: `${options.widthPx}px`,
-			'max-width': `${options.widthPx}px`,
-		});
-	}
-
 	const hasRangeLabels = rows.some((row) => row.year.length > 5);
 	buildColGroup(table, singleTier, options, hasRangeLabels);
 
@@ -578,7 +571,8 @@ function renderTableLayout(
 						});
 						barCell.rowSpan = periodRowSpan;
 						if (itemRecord?.colorKey && periodRowSpan === 1) {
-							barCell.style.backgroundColor = getColorForKey(itemRecord.colorKey);
+							barCell.classList.add('has-item-color');
+							barCell.setCssProps({ '--release-timeline-base-view-item-color': getColorForKey(itemRecord.colorKey) });
 						}
 					}
 				}
@@ -705,7 +699,8 @@ function renderTableLayout(
 					cls: ['release-timeline-base-view-accent-cell', `release-timeline-base-view-accent-cell--${monthAccentClass}`],
 				});
 				if (itemRecord?.colorKey && options.itemLayout === 'stacked') {
-					accentCell.style.backgroundColor = getColorForKey(itemRecord.colorKey);
+					accentCell.classList.add('has-item-color');
+					accentCell.setCssProps({ '--release-timeline-base-view-item-color': getColorForKey(itemRecord.colorKey) });
 				}
 
 				const itemCell = tr.createEl('td', {
@@ -751,9 +746,7 @@ function renderSpineLayout(
 ): HTMLElement {
 	const rows = expandRowsWithState(rawRows, expandedKeys);
 	const wrapper = createDiv({ cls: 'release-timeline-base-view-spine' });
-	if (options.widthMode === 'fixed') {
-		wrapper.setCssProps({ 'max-width': `${options.widthPx}px` });
-	}
+	wrapper.dataset.widthMode = options.widthMode;
 
 	const expandKeyByRow = new Map<TimelineRow, string>();
 	rawRows.forEach((row, index) => {
@@ -844,7 +837,7 @@ function renderSpineLayout(
 	return wrapper;
 }
 
-function createBentLeaderSvg(accentClass: 'primary' | 'alternate', customColor?: string): SVGSVGElement {
+function createBentLeaderSvg(accentClass: 'primary' | 'alternate'): SVGSVGElement {
 	const svgNS = 'http://www.w3.org/2000/svg';
 	const svg = activeDocument.createElementNS(svgNS, 'svg');
 	svg.setAttribute('class', `release-timeline-base-view-hleader is-${accentClass}`);
@@ -860,9 +853,6 @@ function createBentLeaderSvg(accentClass: 'primary' | 'alternate', customColor?:
 	path.setAttribute('stroke-width', '2');
 	path.setAttribute('stroke-linecap', 'round');
 	path.setAttribute('stroke-linejoin', 'round');
-	if (customColor) {
-		path.style.stroke = customColor;
-	}
 	svg.appendChild(path);
 	return svg;
 }
@@ -997,13 +987,18 @@ function renderHorizontalLayout(
 			cls: ['release-timeline-base-view-hnode-dot', `is-${accentClass}`],
 		});
 		if (customColor) {
-			dot.style.backgroundColor = customColor;
+			dot.classList.add('has-item-color');
+			dot.setCssProps({ '--release-timeline-base-view-item-color': customColor });
 		}
 
 		// Below axis: vertical drop + diagonal leader line + angled condensed content
 		if (!isEmpty) {
 			const callout = node.createDiv({ cls: 'release-timeline-base-view-hnode-callout' });
-			callout.appendChild(createBentLeaderSvg(accentClass, customColor));
+			if (customColor) {
+				callout.classList.add('has-item-color');
+				callout.setCssProps({ '--release-timeline-base-view-item-color': customColor });
+			}
+			callout.appendChild(createBentLeaderSvg(accentClass));
 
 			const angled = callout.createDiv({ cls: 'release-timeline-base-view-hnode-angled' });
 			const itemsStack = angled.createDiv({ cls: 'release-timeline-base-view-hnode-items' });
@@ -1025,7 +1020,7 @@ function renderHorizontalLayout(
 			if (!strip.isConnected) {
 				return;
 			}
-			track.style.transform = '';
+			track.setCssProps({ '--release-timeline-base-view-scale': '1' });
 			const availableWidth = strip.clientWidth - 24;
 			// Account for angled label overhang on the rightmost node
 			const naturalWidth = track.scrollWidth + 110;
@@ -1034,7 +1029,7 @@ function renderHorizontalLayout(
 				return;
 			}
 			const ratio = Math.max(0.35, Math.min(1, availableWidth / naturalWidth));
-			track.style.transform = `scale(${ratio.toFixed(4)})`;
+			track.setCssProps({ '--release-timeline-base-view-scale': ratio.toFixed(4) });
 			strip.classList.toggle('is-scaled', ratio < 1);
 		};
 
@@ -1117,7 +1112,8 @@ function renderHorizontalStackedLayout(
 			cls: ['release-timeline-base-view-hnode-dot', `is-${accentClass}`],
 		});
 		if (customColor) {
-			dot.style.backgroundColor = customColor;
+			dot.classList.add('has-item-color');
+			dot.setCssProps({ '--release-timeline-base-view-item-color': customColor });
 		}
 
 		if (!isEmpty) {
@@ -1126,14 +1122,16 @@ function renderHorizontalStackedLayout(
 				cls: ['release-timeline-base-view-hnode-vstem', `is-${accentClass}`],
 			});
 			if (customColor) {
-				stem.style.backgroundColor = customColor;
+				stem.classList.add('has-item-color');
+				stem.setCssProps({ '--release-timeline-base-view-item-color': customColor });
 			}
 
 			const list = stemWrap.createDiv({
 				cls: ['release-timeline-base-view-hnode-vlist', `is-${accentClass}`],
 			});
 			if (customColor) {
-				list.style.borderLeftColor = customColor;
+				list.classList.add('has-item-color');
+				list.setCssProps({ '--release-timeline-base-view-item-color': customColor });
 			}
 
 			for (const record of row.items) {
@@ -1154,7 +1152,7 @@ function renderHorizontalStackedLayout(
 			if (!strip.isConnected) {
 				return;
 			}
-			track.style.transform = '';
+			track.setCssProps({ '--release-timeline-base-view-scale': '1' });
 			const availableWidth = strip.clientWidth - 16;
 			const naturalWidth = track.scrollWidth;
 			if (availableWidth <= 0 || naturalWidth <= availableWidth) {
@@ -1162,7 +1160,7 @@ function renderHorizontalStackedLayout(
 				return;
 			}
 			const ratio = Math.max(0.35, Math.min(1, availableWidth / naturalWidth));
-			track.style.transform = `scale(${ratio.toFixed(4)})`;
+			track.setCssProps({ '--release-timeline-base-view-scale': ratio.toFixed(4) });
 			strip.classList.toggle('is-scaled', ratio < 1);
 		};
 

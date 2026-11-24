@@ -528,16 +528,14 @@ export class ReleaseTimelineBasesView extends BasesView implements HoverParent {
 		const options = resolveTimelineOptions(this.plugin, this.config);
 		const instanceId = `release-timeline-base-view-${Date.now().toString(36)}`;
 		this.rootEl.dataset.releaseTimelineViewInstance = instanceId;
-		this.rootEl.style.setProperty(
-			'--release-timeline-base-view-width',
-			options.widthMode === 'fixed' ? `${options.widthPx}px` : '100%',
-		);
-		this.rootEl.style.setProperty('--release-timeline-base-view-font-size', `${options.fontSizePercent}%`);
-		this.rootEl.style.setProperty(
-			'--release-timeline-base-view-color-primary',
-			this.plugin.settings.useThemeAccent ? 'var(--interactive-accent)' : this.plugin.settings.accentPrimaryColor,
-		);
-		this.rootEl.style.setProperty('--release-timeline-base-view-color-alternate', this.plugin.settings.accentAlternateColor);
+		this.rootEl.setCssProps({
+			'--release-timeline-base-view-width': options.widthMode === 'fixed' ? `${options.widthPx}px` : '100%',
+			'--release-timeline-base-view-font-size': `${options.fontSizePercent}%`,
+			'--release-timeline-base-view-color-primary': this.plugin.settings.useThemeAccent
+				? 'var(--interactive-accent)'
+				: this.plugin.settings.accentPrimaryColor,
+			'--release-timeline-base-view-color-alternate': this.plugin.settings.accentAlternateColor,
+		});
 
 		const datePropertyId = readPropertyId(this.config, 'dateProperty', 'note.date') ?? 'note.date';
 		const labelPropertyId = readPropertyId(this.config, 'labelProperty', 'file.name') ?? 'file.name';

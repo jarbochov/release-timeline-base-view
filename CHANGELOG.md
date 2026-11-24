@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Replaced all direct inline style assignments with CSS custom properties (`setCssProps`) and CSS classes.
+- Removed calls to deprecated `PluginSettingTab.display()` in favor of internal re-render helper alongside `getSettingDefinitions()`.
+- Replaced `all: unset` in `styles.css` with explicit button reset properties for CSS lint compliance.
+
 ## 0.2.0
 
 ### New Layouts & Modes

@@ -267,6 +267,10 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
+		this.renderSettings();
+	}
+
+	private renderSettings(): void {
 		const { containerEl } = this;
 		containerEl.empty();
 
@@ -368,7 +372,7 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 				dropdown.onChange(async (value) => {
 					this.plugin.settings.defaultWidthMode = value as WidthMode;
 					await this.plugin.saveSettings();
-					this.display();
+					this.renderSettings();
 				});
 			});
 
@@ -525,7 +529,7 @@ export class ReleaseTimelineSettingTab extends PluginSettingTab {
 				toggle.onChange(async (value) => {
 					this.plugin.settings.useThemeAccent = value;
 					await this.plugin.saveSettings();
-					this.display();
+					this.renderSettings();
 				});
 			});
 
